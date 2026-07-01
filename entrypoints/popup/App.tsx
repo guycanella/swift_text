@@ -1,34 +1,62 @@
 import { useState } from 'react';
-import reactLogo from '@/assets/react.svg';
-import wxtLogo from '/wxt.svg';
-import './App.css';
+
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [value, setValue] = useState('');
 
   return (
-    <>
-      <div>
-        <a href="https://wxt.dev" target="_blank">
-          <img src={wxtLogo} className="logo" alt="WXT logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>WXT + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the WXT and React logos to learn more
-      </p>
-    </>
+    <div className="flex w-80 flex-col gap-4 p-4">
+      <h1 className="text-lg font-semibold">SwiftText</h1>
+
+      <Input
+        placeholder="Shadcn Input smoke test"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+      />
+
+      <Select defaultValue="anthropic">
+        <SelectTrigger className="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="anthropic">Anthropic</SelectItem>
+          <SelectItem value="openai">OpenAI</SelectItem>
+          <SelectItem value="google">Google</SelectItem>
+          <SelectItem value="fuelix">FueliX</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button>Open Dialog</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Shadcn Dialog smoke test</DialogTitle>
+            <DialogDescription>
+              Tailwind CSS v4 + Shadcn components are wired up correctly.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
 
