@@ -39,6 +39,8 @@ export default defineContentScript({
   matches: ['*://*.google.com/*', '*://*.linkedin.com/*', '*://*.github.com/*'],
   cssInjectionMode: 'ui',
   async main(ctx) {
+    if (!import.meta.env.DEV) return;
+
     const ui = await createShadowRootUi(ctx, {
       name: 'swifttext-widget',
       position: 'overlay',
@@ -46,7 +48,10 @@ export default defineContentScript({
       alignment: 'bottom-right',
       zIndex: 2147483647,
       onMount: (uiContainer) => {
-        const root = ReactDOM.createRoot(uiContainer);
+        const appRoot = document.createElement('div');
+        uiContainer.append(appRoot);
+
+        const root = ReactDOM.createRoot(appRoot);
         root.render(<ShadowDomSmokeTest container={uiContainer} />);
         return root;
       },
