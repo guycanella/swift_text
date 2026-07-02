@@ -15,6 +15,7 @@ stats-*.json
 web-ext.config.ts
 PROGRESS.md
 SWIFTTEXT*.md
+AGENTS.md
 .claude
 
 # Editor directories and files
