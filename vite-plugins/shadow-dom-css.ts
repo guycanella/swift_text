@@ -24,7 +24,7 @@ export function shadowDomCssPlugin(): Plugin {
       }
       return null;
     },
-    transform(code, id) {
+    async transform(code, id) {
       if (!id.endsWith('.css')) return null;
 
       const propertyMatches = code.match(/@property\s+--[\w-]+\s*\{[^}]*\}/g);
@@ -41,7 +41,11 @@ export function shadowDomCssPlugin(): Plugin {
       if (hasNewProperties && server) {
         const virtualModule = server.moduleGraph.getModuleById(RESOLVED_GLOBAL_PROPERTIES_MODULE_ID);
         if (virtualModule) {
-          server.moduleGraph.invalidateModule(virtualModule);
+          try {
+            await server.reloadModule(virtualModule);
+          } catch (error) {
+            server.config.logger.warn(`[swifttext-shadow-dom-css] failed to reload virtual module: ${error}`);
+          }
         }
       }
 
