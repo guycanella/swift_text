@@ -39,19 +39,23 @@ export function shadowDomCssPlugin(): Plugin {
       }
 
       if (hasNewProperties && server) {
-        const virtualModule = server.moduleGraph.getModuleById(RESOLVED_GLOBAL_PROPERTIES_MODULE_ID);
+        const virtualModule = server.moduleGraph.getModuleById(
+          RESOLVED_GLOBAL_PROPERTIES_MODULE_ID,
+        );
         if (virtualModule) {
           try {
             await server.reloadModule(virtualModule);
           } catch (error) {
-            server.config.logger.warn(`[swifttext-shadow-dom-css] failed to reload virtual module: ${error}`);
+            server.config.logger.warn(
+              `[swifttext-shadow-dom-css] failed to reload virtual module: ${String(error)}`,
+            );
           }
         }
       }
 
       const withHostVariables = code.replace(
         /:root\s*\{([^}]*)\}/g,
-        (fullMatch, declarations) => `${fullMatch}\n:host{${declarations}}`,
+        (fullMatch: string, declarations: string) => `${fullMatch}\n:host{${declarations}}`,
       );
 
       if (withHostVariables === code) return null;
