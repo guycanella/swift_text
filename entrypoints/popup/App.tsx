@@ -28,7 +28,9 @@ function App() {
       <Input
         placeholder="Shadcn Input smoke test"
         value={value}
-        onChange={(event) => setValue(event.target.value)}
+        onChange={(event) => {
+          setValue(event.target.value);
+        }}
       />
 
       <Select defaultValue="anthropic">
