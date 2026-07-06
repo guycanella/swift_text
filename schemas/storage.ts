@@ -27,20 +27,10 @@ export const UserSettingsSchema = z.object({
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
 
 export const APIKeyStoreSchema = z
-  .object({
-    anthropic: z.string().min(1).optional(),
-    openai: z.string().min(1).optional(),
-    google: z.string().min(1).optional(),
-    fuelix: z.string().min(1).optional(),
-  })
-  .refine(
-    (store) =>
-      store.anthropic != null ||
-      store.openai != null ||
-      store.google != null ||
-      store.fuelix != null,
-    { message: 'At least one API key is required' },
-  );
+  .partialRecord(LLMProviderSchema, z.string().min(1))
+  .refine((store) => Object.keys(store).length > 0, {
+    message: 'At least one API key is required',
+  });
 export type APIKeyStore = z.infer<typeof APIKeyStoreSchema>;
 
 export const WidgetPositionSchema = z.object({

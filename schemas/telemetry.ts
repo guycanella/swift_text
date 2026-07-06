@@ -19,7 +19,7 @@ export const TelemetryEventSchema = z.object({
   provider: LLMProviderSchema.optional(),
   value: z.number().optional(),
   metadata: z.record(z.string(), TelemetryMetadataValueSchema).optional(),
-  anonymousUuid: z.string(),
+  anonymousUuid: z.uuid(),
   extensionVersion: z.string(),
   createdAt: z.number(),
 });

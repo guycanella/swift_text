@@ -11,12 +11,16 @@ export const PIIPatternSchema = z.object({
 });
 export type PIIPattern = z.infer<typeof PIIPatternSchema>;
 
-export const PIIMatchSchema = z.object({
-  type: z.string(),
-  tier: PIITierSchema,
-  value: z.string(),
-  startIndex: z.number(),
-  endIndex: z.number(),
-  maskReplacement: z.string(),
-});
+export const PIIMatchSchema = z
+  .object({
+    type: z.string(),
+    tier: PIITierSchema,
+    value: z.string(),
+    startIndex: z.number().int().nonnegative(),
+    endIndex: z.number().int().nonnegative(),
+    maskReplacement: z.string(),
+  })
+  .refine((match) => match.endIndex > match.startIndex, {
+    message: 'endIndex must be greater than startIndex',
+  });
 export type PIIMatch = z.infer<typeof PIIMatchSchema>;
