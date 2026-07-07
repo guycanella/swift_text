@@ -21,6 +21,6 @@ export const PIIMatchSchema = z
     maskReplacement: z.string(),
   })
   .refine((match) => match.endIndex > match.startIndex, {
-    message: 'endIndex must be greater than startIndex',
+    error: 'endIndex must be greater than startIndex',
   });
 export type PIIMatch = z.infer<typeof PIIMatchSchema>;

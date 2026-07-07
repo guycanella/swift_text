@@ -26,11 +26,13 @@ export const UserSettingsSchema = z.object({
 });
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
 
-export const APIKeyStoreSchema = z
-  .partialRecord(LLMProviderSchema, z.string().min(1))
-  .refine((store) => Object.keys(store).length > 0, {
-    message: 'At least one API key is required',
-  });
+export const APIKeyStoreShapeSchema = z.partialRecord(LLMProviderSchema, z.string().min(1));
+export type APIKeyStoreShape = z.infer<typeof APIKeyStoreShapeSchema>;
+
+export const APIKeyStoreSchema = APIKeyStoreShapeSchema.refine(
+  (store) => Object.keys(store).length > 0,
+  { error: 'At least one API key is required' },
+);
 export type APIKeyStore = z.infer<typeof APIKeyStoreSchema>;
 
 export const WidgetPositionSchema = z.object({
