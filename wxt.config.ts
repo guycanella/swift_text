@@ -15,7 +15,7 @@ export default defineConfig({
   manifest: ({ command }) => ({
     name: 'SwiftText',
     description: 'Bring your own LLM API key to enhance and rewrite text directly in the browser.',
-    permissions: ['storage', 'activeTab', 'scripting'],
+    permissions: ['storage', 'activeTab', 'scripting', 'alarms'],
     host_permissions: API_HOST_PERMISSIONS,
     ...(command === 'build' && {
       content_security_policy: {
