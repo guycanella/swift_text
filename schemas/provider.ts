@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const LLMProviderSchema = z.enum(['anthropic', 'openai', 'google', 'fuelix']);
+export const LLMProviderSchema = z.enum(['anthropic', 'openai', 'google', 'kimi']);
 export type LLMProvider = z.infer<typeof LLMProviderSchema>;
 
 export const ModelInfoSchema = z.object({
