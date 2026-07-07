@@ -1,21 +1,13 @@
-import { APICallError, generateText } from 'ai';
+import { generateText } from 'ai';
 
+import { classifyProviderError } from '@/lib/providers/errors';
 import { createProvider } from '@/lib/providers/factory';
 import { getModelsForProvider } from '@/lib/providers/models';
+import type { APIErrorKind } from '@/schemas/chat';
 import type { ProviderConfig } from '@/schemas/provider';
 
-export type ProviderHealthCheckStatus = 'ok' | 'invalid_api_key' | 'rate_limited' | 'unreachable';
-
 export interface ProviderHealthCheckResult {
-  status: ProviderHealthCheckStatus;
-}
-
-function classifyError(error: unknown): ProviderHealthCheckStatus {
-  if (APICallError.isInstance(error)) {
-    if (error.statusCode === 401 || error.statusCode === 403) return 'invalid_api_key';
-    if (error.statusCode === 429) return 'rate_limited';
-  }
-  return 'unreachable';
+  status: 'ok' | APIErrorKind;
 }
 
 export async function checkProviderHealth(
@@ -32,6 +24,6 @@ export async function checkProviderHealth(
     });
     return { status: 'ok' };
   } catch (error) {
-    return { status: classifyError(error) };
+    return { status: classifyProviderError(error) };
   }
 }
