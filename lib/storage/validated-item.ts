@@ -21,9 +21,14 @@ function createValidatedWatch<TSchema extends z.ZodType>(
     item.watch((newRaw, oldRaw) => {
       const newResult = schema.safeParse(newRaw);
       const oldResult = schema.safeParse(oldRaw);
+      if (newResult.success && oldResult.success) {
+        cb(newResult.data, oldResult.data);
+        return;
+      }
+      const fallback = getFallback();
       cb(
-        newResult.success ? newResult.data : getFallback(),
-        oldResult.success ? oldResult.data : getFallback(),
+        newResult.success ? newResult.data : fallback,
+        oldResult.success ? oldResult.data : fallback,
       );
     });
 }
@@ -64,6 +69,17 @@ export function createSelfHealingAccessor<TSchema extends z.ZodType>(
   schema: TSchema,
   regenerate: () => z.infer<TSchema>,
 ) {
+  let inFlightRepair: Promise<z.infer<TSchema>> | null = null;
+
+  const repair = async (
+    issues: ReturnType<typeof summarizeZodIssues>,
+  ): Promise<z.infer<TSchema>> => {
+    const regenerated = regenerate();
+    console.warn(`[storage] Invalid value for "${item.key}", regenerating.`, issues);
+    await item.setValue(regenerated);
+    return regenerated;
+  };
+
   return {
     key: item.key,
     async get(): Promise<z.infer<TSchema>> {
@@ -71,13 +87,10 @@ export function createSelfHealingAccessor<TSchema extends z.ZodType>(
       const result = schema.safeParse(raw);
       if (result.success) return result.data;
 
-      const regenerated = regenerate();
-      console.warn(
-        `[storage] Invalid value for "${item.key}", regenerating.`,
-        summarizeZodIssues(result.error),
-      );
-      await item.setValue(regenerated);
-      return regenerated;
+      inFlightRepair ??= repair(summarizeZodIssues(result.error)).finally(() => {
+        inFlightRepair = null;
+      });
+      return inFlightRepair;
     },
     watch: createValidatedWatch(item, schema, regenerate),
   };
