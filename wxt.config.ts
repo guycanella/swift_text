@@ -6,7 +6,7 @@ const API_HOST_PERMISSIONS = [
   'https://api.anthropic.com/*',
   'https://api.openai.com/*',
   'https://generativelanguage.googleapis.com/*',
-  'https://api.fuelix.ai/*',
+  'https://api.moonshot.ai/*',
 ];
 
 // See https://wxt.dev/api/config.html

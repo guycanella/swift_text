@@ -41,7 +41,7 @@ function App() {
           <SelectItem value="anthropic">Anthropic</SelectItem>
           <SelectItem value="openai">OpenAI</SelectItem>
           <SelectItem value="google">Google</SelectItem>
-          <SelectItem value="fuelix">FueliX</SelectItem>
+          <SelectItem value="kimi">Kimi</SelectItem>
         </SelectContent>
       </Select>
 
