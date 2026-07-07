@@ -6,7 +6,6 @@ import type { ProtocolMap } from '@/lib/messaging/protocol';
 const RETRYABLE_ERROR_PATTERNS = [
   /could not establish connection/i,
   /receiving end does not exist/i,
-  /extension context invalidated/i,
   /message port closed before a response was received/i,
 ];
 
@@ -26,6 +25,9 @@ export async function sendMessageWithRetry<TType extends keyof ProtocolMap>(
   options: RetryOptions = {},
 ): Promise<GetReturnType<ProtocolMap[TType]>> {
   const { maxAttempts = 3, delayMs = 250 } = options;
+  if (maxAttempts < 1) {
+    throw new RangeError('[messaging] maxAttempts must be at least 1');
+  }
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
