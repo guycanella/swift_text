@@ -45,6 +45,9 @@ export class SwiftTextTransport implements ChatTransport<UIMessage> {
           this.onFirstToken?.(performance.now() - requestStartedAt);
         }
       },
+      onError: ({ error }) => {
+        console.error('[transport] stream error', classifyProviderError(error));
+      },
     });
 
     return toUIMessageStream({
