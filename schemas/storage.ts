@@ -31,7 +31,7 @@ export type APIKeyStoreShape = z.infer<typeof APIKeyStoreShapeSchema>;
 
 export const APIKeyStoreSchema = APIKeyStoreShapeSchema.refine(
   (store) => Object.keys(store).length > 0,
-  { message: 'At least one API key is required' },
+  { error: 'At least one API key is required' },
 );
 export type APIKeyStore = z.infer<typeof APIKeyStoreSchema>;
 

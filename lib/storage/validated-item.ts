@@ -12,6 +12,22 @@ export function summarizeZodIssues(error: z.ZodError): {
   }));
 }
 
+function createValidatedWatch<TSchema extends z.ZodType>(
+  item: WxtStorageItem<z.infer<TSchema>, Record<string, unknown>>,
+  schema: TSchema,
+  getFallback: () => z.infer<TSchema>,
+) {
+  return (cb: (newValue: z.infer<TSchema>, oldValue: z.infer<TSchema>) => void) =>
+    item.watch((newRaw, oldRaw) => {
+      const newResult = schema.safeParse(newRaw);
+      const oldResult = schema.safeParse(oldRaw);
+      cb(
+        newResult.success ? newResult.data : getFallback(),
+        oldResult.success ? oldResult.data : getFallback(),
+      );
+    });
+}
+
 export function createValidatedAccessor<TSchema extends z.ZodType>(
   item: WxtStorageItem<z.infer<TSchema>, Record<string, unknown>>,
   schema: TSchema,
@@ -39,6 +55,30 @@ export function createValidatedAccessor<TSchema extends z.ZodType>(
       }
       await item.setValue(result.data);
     },
-    watch: (cb: Parameters<typeof item.watch>[0]) => item.watch(cb),
+    watch: createValidatedWatch(item, schema, () => item.fallback),
+  };
+}
+
+export function createSelfHealingAccessor<TSchema extends z.ZodType>(
+  item: WxtStorageItem<z.infer<TSchema>, Record<string, unknown>>,
+  schema: TSchema,
+  regenerate: () => z.infer<TSchema>,
+) {
+  return {
+    key: item.key,
+    async get(): Promise<z.infer<TSchema>> {
+      const raw = await item.getValue();
+      const result = schema.safeParse(raw);
+      if (result.success) return result.data;
+
+      const regenerated = regenerate();
+      console.warn(
+        `[storage] Invalid value for "${item.key}", regenerating.`,
+        summarizeZodIssues(result.error),
+      );
+      await item.setValue(regenerated);
+      return regenerated;
+    },
+    watch: createValidatedWatch(item, schema, regenerate),
   };
 }
