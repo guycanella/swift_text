@@ -18,5 +18,9 @@ export function createProvider(config: ProviderConfig): LLMProviderInstance {
       return createGoogleGenerativeAI({ apiKey: config.apiKey });
     case 'kimi':
       return createOpenAI({ apiKey: config.apiKey, baseURL: KIMI_BASE_URL });
+    default: {
+      const exhaustiveCheck: never = config.provider;
+      throw new Error(`Unsupported provider: ${String(exhaustiveCheck)}`);
+    }
   }
 }
